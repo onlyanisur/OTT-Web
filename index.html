@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mcast OTT</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      background-color: #1f1f1f;
+      padding: 20px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: #00d1ff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    video {
+      width: 90%;
+      max-width: 900px;
+      height: auto;
+      margin-bottom: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      background: black;
+    }
+
+    aside {
+      width: 250px;
+      background-color: #1a1a1a;
+      overflow-y: auto;
+      padding: 10px;
+      box-shadow: -2px 0 10px rgba(0,0,0,0.5);
+    }
+
+    .channel-button {
+      display: block;
+      width: 100%;
+      background-color: #1f1f1f;
+      border: 2px solid #00d1ff;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      color: #ffffff;
+      font-size: 14px;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .channel-button:hover {
+      background-color: #00d1ff;
+      color: #121212;
+      transform: scale(1.02);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      aside {
+        width: 100%;
+        order: -1;
+      }
+
+      .channel-button {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>Mcast OTT</header>
+
+<div class="container">
+  <main>
+    <video id="video" controls autoplay></video>
+  </main>
+
+  <aside id="channel-list"></aside>
+</div>
+
+<script>
+  const channels = [
+    { name: "Zee Bangla", url: "http://36.50.23.34:80/manda-online/manda-online/54.m3u8" },
+    { name: "Zee Bangla Cinema", url: "http://36.50.23.34:80/manda-online/manda-online/55.m3u8" },
+    { name: "Star Jalsha", url: "http://36.50.23.34:80/manda-online/manda-online/56.m3u8" },
+    { name: "Jalsha Movies", url: "http://36.50.23.34:80/manda-online/manda-online/57.m3u8" },
+    { name: "Sony HD", url: "http://36.50.23.34:80/manda-online/manda-online/58.m3u8" },
+    { name: "Sony Aath", url: "http://36.50.23.34:80/manda-online/manda-online/59.m3u8" },
+    { name: "Sony Max HD", url: "http://36.50.23.34:80/manda-online/manda-online/60.m3u8" },
+    { name: "Colors Bangla HD", url: "http://36.50.23.34:80/manda-online/manda-online/61.m3u8" },
+    { name: "Astro Football", url: "http://36.50.23.34:80/manda-online/manda-online/63.m3u8" },
+    { name: "TNT Sports 1", url: "http://36.50.23.34:80/manda-online/manda-online/64.m3u8" },
+    { name: "TNT Sports 2", url: "http://36.50.23.34:80/manda-online/manda-online/65.m3u8" },
+    { name: "TNT Sports 3", url: "http://36.50.23.34:80/manda-online/manda-online/66.m3u8" },
+    { name: "TNT Sports 4", url: "http://36.50.23.34:80/manda-online/manda-online/67.m3u8" },
+    { name: "Bein Sports 1", url: "http://36.50.23.34:80/manda-online/manda-online/68.m3u8" },
+    { name: "Bein Sports 2", url: "http://36.50.23.34:80/manda-online/manda-online/69.m3u8" },
+    { name: "Bein Sports 3", url: "http://36.50.23.34:80/manda-online/manda-online/70.m3u8" },
+    { name: "TyC Sports", url: "http://36.50.23.34:80/manda-online/manda-online/75.m3u8" },
+    { name: "Star Sports HD1", url: "http://36.50.23.34:80/manda-online/manda-online/76.m3u8" },
+    { name: "Love Nature", url: "http://36.50.23.34:80/manda-online/manda-online/81.m3u8" },
+    { name: "Discovery HD", url: "http://36.50.23.34:80/manda-online/manda-online/82.m3u8" },
+    { name: "T Sports", url: "http://36.50.23.34:80/manda-online/manda-online/84.m3u8" },
+    { name: "CN", url: "http://36.50.23.34:80/manda-online/manda-online/85.m3u8" },
+    { name: "Pogo", url: "http://36.50.23.34:80/manda-online/manda-online/86.m3u8" },
+    { name: "Channel 24", url: "http://36.50.23.34:80/manda-online/manda-online/87.m3u8" },
+    { name: "Ekattor", url: "http://36.50.23.34:80/manda-online/manda-online/88.m3u8" },
+    { name: "Jamuna", url: "http://36.50.23.34:80/manda-online/manda-online/89.m3u8" },
+    { name: "Somoy", url: "http://36.50.23.34:80/manda-online/manda-online/90.m3u8" },
+    { name: "Independent", url: "http://36.50.23.34:80/manda-online/manda-online/91.m3u8" },
+    { name: "&Picture HD", url: "http://36.50.23.34:80/manda-online/manda-online/93.m3u8" }
+  ];
+
+  const video = document.getElementById('video');
+  const list = document.getElementById('channel-list');
+
+  function playChannel(url) {
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(url);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = url;
+      video.addEventListener('loadedmetadata', () => video.play());
+    }
+  }
+
+  channels.forEach(channel => {
+    const btn = document.createElement('button');
+    btn.innerText = channel.name;
+    btn.className = 'channel-button';
+    btn.onclick = () => playChannel(channel.url);
+    list.appendChild(btn);
+  });
+
+  playChannel(channels[0].url);
+</script>
+
+</body>
+</html>
